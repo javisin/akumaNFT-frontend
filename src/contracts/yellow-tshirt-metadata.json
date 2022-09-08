@@ -1,0 +1,15 @@
+{
+  "attributes": [
+    {
+      "trait_type": "Color",
+      "value": "Yellow"
+    },
+    {
+      "trait_type": "Type",
+      "value": "T-Shirt"
+    }
+  ],
+  "description": "A yellow Akuma T-shirt",
+  "image": "https://gateway.pinata.cloud/ipfs/QmTBo7U2ebYoSRxu7jAYqrgTGHdSVfpaXpGzfU1AhDhM4M",
+  "name": "Yellow T-Shirt"
+}

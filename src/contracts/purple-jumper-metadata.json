@@ -1,0 +1,15 @@
+{
+  "attributes": [
+    {
+      "trait_type": "Color",
+      "value": "Purple"
+    },
+    {
+      "trait_type": "Type",
+      "value": "Jumper"
+    }
+  ],
+  "description": "A purple Akuma jumper",
+  "image": "https://gateway.pinata.cloud/ipfs/QmRK2AC334dU5kxevn3vwWJxxQkmvVtQ68o3dMYAACVU9v",
+  "name": "Purple Jumper"
+}

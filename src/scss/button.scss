@@ -1,0 +1,13 @@
+button {
+  margin-top: 1rem !important;
+  &:not(:disabled) {
+    cursor: pointer;
+  }
+  &:disabled {
+    background-color: gray !important;
+  }
+  &:disabled {
+    cursor: not-allowed;
+    pointer-events: all !important;
+  }
+}
