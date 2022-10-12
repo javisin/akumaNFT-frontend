@@ -1,0 +1,15 @@
+{
+  "attributes": [
+    {
+      "trait_type": "Color",
+      "value": "Black"
+    },
+    {
+      "trait_type": "Type",
+      "value": "Cap"
+    }
+  ],
+  "description": "An Akuma black cap",
+  "image": "https://gateway.pinata.cloud/ipfs/QmVvXLjFCoeeHtwKhtSRHB2saYTkM8SV539iMXNqmmpHec",
+  "name": "Black Akuma cap"
+}

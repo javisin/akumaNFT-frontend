@@ -1,17 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import './scss/App.scss';
-import { ethers } from 'ethers';
+import { ethers, utils } from 'ethers';
 import contract from './contracts/AkumaNFT.json';
 import akumaTokens from './tokens.json';
 import MintNftButton from './components/MintNftButton';
 import Navbar from './components/Navbar';
 
-const contractAddress = '0x639da6491C4c47254876AFcb9e88d15A61B39f2e';
+const contractAddress = '0x334F14DA0f3168ff91fa20980856BdF67acF7807';
+const ownerAddress = '0x92ba252219f8e5988ca2403985d6ebb261304ccc';
 const { abi } = contract;
 
 function App() {
   const [currentAccount, setCurrentAccount] = useState(null);
+  const [contractBalance, setContractBalance] = useState('0');
   const [tokens, setTokens] = useState([]);
+
+  useEffect(() => {
+    const checkContractBalance = async () => {
+      const { ethereum } = window;
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const balance = await provider.getBalance(contractAddress);
+      setContractBalance(utils.formatEther(balance.toString()));
+    };
+    checkContractBalance();
+  }, []);
 
   const checkTokenIsMinted = async (tokenId) => {
     const { ethereum } = window;
@@ -58,6 +70,21 @@ function App() {
     }
   };
 
+  const withdraw = async () => {
+    try {
+      const { ethereum } = window;
+
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const nftContract = new ethers.Contract(contractAddress, abi, signer);
+        await nftContract.withdraw();
+      }
+    } catch (err) {
+      console.log(`err: ${err}`);
+    }
+  };
+
   const mintNftHandler = async (id, uri) => {
     try {
       const { ethereum } = window;
@@ -66,40 +93,15 @@ function App() {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
         const nftContract = new ethers.Contract(contractAddress, abi, signer);
-        await nftContract.mintToken(currentAccount, id, uri, { value: 10 });
+        await nftContract.mintToken(currentAccount, id, uri, { value: utils.parseEther('0.01') });
       }
-    } catch (err) {
-      console.log(`eyy ${err}`);
+    } catch (error) {
+      console.log(`err: ${error}`);
     }
   };
 
-  // const getNftsHandler = async () => {
-  //   try {
-  //     const { ethereum } = window;
-  //
-  //     if (ethereum) {
-  //       const provider = new ethers.providers.Web3Provider(ethereum);
-  //       const signer = provider.getSigner();
-  //       const nftContract = new ethers.Contract(contractAddress, abi, signer);
-  //       const supply = await nftContract.totalSupply();
-  //       console.log(supply);
-  //       const tokens = [];
-  //       for (let i = 1; i <= supply; i++) {
-  //         const tokenURI = await nftContract.tokenURI(i);
-  //         console.log(tokenURI);
-  //         await fetch(tokenURI).then(async (response) => {
-  //           tokens.push(await response.json());
-  //         });
-  //       }
-  //       setTokens([...tokens]);
-  //     }
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
-
   const connectWalletButton = () => (
-    <button type="button" onClick={connectWalletHandler} className="cta-button btn-dark">
+    <button type="button" onClick={connectWalletHandler} className="btn btn-dark p-2 ">
       Connect Wallet
     </button>
   );
@@ -123,27 +125,36 @@ function App() {
         <div>
           {currentAccount ? `Address:${currentAccount}` : connectWalletButton()}
         </div>
+
+        {currentAccount === ownerAddress && (
+        <div className="my-4">
+          <h5>
+            Contract balance:
+            {' '}
+            {contractBalance}
+          </h5>
+          <button type="button" className="btn btn-dark m-0" onClick={withdraw}>
+            Withdraw contract balance
+          </button>
+        </div>
+        )}
+
         <div className="row">
           {tokens.map((token) => (
-            <div className="col-4" key={token?.image}>
-              <h4>{token?.name}</h4>
-              <img width="100%" src={token ? convertURL(token.image) : '/'} alt="" />
-              <MintNftButton
-                isMinted={token.isMinted}
-                onClick={() => mintNftHandler(token.id, token.uri)}
-              />
+            <div className="card col-4" key={token?.image}>
+              <div className="card-body">
+                <h5 className="card-title">{token?.name}</h5>
+              </div>
+              <img className="mx-auto" width="75%" src={token ? convertURL(token.image) : '/'} alt="" />
+              <div className="card-body">
+                <MintNftButton
+                  isMinted={token.isMinted}
+                  onClick={() => mintNftHandler(token.id, token.uri)}
+                />
+              </div>
             </div>
           ))}
         </div>
-
-        {/* {tests.map(test => { */}
-        {/*    return ( */}
-        {/*        <div> */}
-        {/*            <h4>{test.name}</h4> */}
-        {/*            <div>{mintNftButton()}</div> */}
-        {/*        </div> */}
-        {/*    )})} */}
-
       </div>
     </>
 
