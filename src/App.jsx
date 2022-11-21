@@ -9,7 +9,6 @@ import AccountInfo from './components/AccountInfo';
 // set max supply?
 // design
 // logo
-// add filters
 
 function App() {
   const [currentAccount, setCurrentAccount] = useState(null);
@@ -39,10 +38,15 @@ function App() {
     <>
       <Navbar />
       <div className="main-app">
-        <AccountInfo />
+        <AccountInfo currentAccount={currentAccount} />
         <div>
           {currentAccount
-            ? `Address:${currentAccount}`
+            ? (
+              <span className="text-truncate d-inline-block w-100">
+                Address:
+                {currentAccount}
+              </span>
+            )
             : (
               <button type="button" onClick={connectWalletHandler} className="btn btn-dark p-2 ">
                 Connect Wallet

@@ -9,7 +9,8 @@ const { abi } = contract;
 
 function TokensList({ currentAccount }) {
   const [tokens, setTokens] = useState([]);
-  const [color, setColor] = useState('all');
+  const [color, setColor] = useState('All');
+  const [type, setType] = useState('All');
 
   const checkTokenIsMinted = async (tokenId) => {
     const { ethereum } = window;
@@ -26,18 +27,17 @@ function TokensList({ currentAccount }) {
 
   const getNfts = async () => {
     try {
-      const list = [];
-      for (const token of akumaTokens) {
+      const list = await Promise.all(akumaTokens.map(async (token) => {
         const response = await fetch(token.uri);
         const tokenData = await response.json();
         const isMinted = await checkTokenIsMinted(token.id);
-        list.push({
+        return {
           uri: token.uri,
           id: token.id,
           isMinted,
           ...tokenData,
-        });
-      }
+        };
+      }));
       setTokens([...list]);
     } catch (err) {
       console.log(err);
@@ -65,30 +65,49 @@ function TokensList({ currentAccount }) {
 
   const convertURL = (url) => url.replace('ipfs://', 'https://ipfs.io/ipfs/');
 
-  useEffect(() => {
-    const checkWalletIsConnected = async () => {
-      const { ethereum } = window;
-      if (!ethereum) {
-        console.log('Install metamask');
-      }
-    };
-    checkWalletIsConnected();
-  }, []);
-
   const handleColorChange = (event) => {
     const { value } = event.target;
     setColor(value);
   };
 
+  const handleTypeChange = (event) => {
+    const { value } = event.target;
+    setType(value);
+  };
+
+  const filteredTokens = tokens.filter((token) => {
+    const colorAttribute = token.attributes.find((attribute) => attribute.trait_type === 'Color');
+    const typeAttribute = token.attributes.find((attribute) => attribute.trait_type === 'Type');
+    return (colorAttribute.value === color || color === 'All')
+      && (typeAttribute.value === type || type === 'All');
+  });
+
   return (
     <>
-      <select name="color" value={color} onChange={handleColorChange}>
-        <option value="red">Red</option>
-        <option value="black">Black</option>
-      </select>
+      <div className="row my-3">
+        <label className="col-6 col-sm-3" htmlFor="color">
+          Color
+          <select className="d-block w-100" id="color" name="color" value={color} onChange={handleColorChange}>
+            <option value="All">All</option>
+            <option value="Yellow">Yellow</option>
+            <option value="Black">Black</option>
+          </select>
+        </label>
+
+        <label className="col-6 col-sm-3" htmlFor="type">
+          Type
+          <select className="d-block w-100" id="type" name="type" value={type} onChange={handleTypeChange}>
+            <option value="All">All</option>
+            <option value="Cap">Cap</option>
+            <option value="T-Shirt">T-Shirt</option>
+            <option value="Jumper">Jumper</option>
+          </select>
+        </label>
+      </div>
+
       <div className="row">
-        {tokens.map((token) => (
-          <div className="card col-4" key={token?.image}>
+        {filteredTokens.map((token) => (
+          <div className="card col-12 col-sm-6 col-lg-4" key={token?.image}>
             <div className="card-body">
               <h5 className="card-title">{token?.name}</h5>
             </div>
