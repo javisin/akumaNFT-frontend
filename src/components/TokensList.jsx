@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ethers, utils } from 'ethers';
+import { toast } from 'react-toastify';
 import akumaTokens from '../tokens.json';
 import MintNftButton from './MintNftButton';
 import { contractAddress } from '../constants';
@@ -40,7 +41,7 @@ function TokensList({ currentAccount }) {
       }));
       setTokens([...list]);
     } catch (err) {
-      console.log(err);
+      toast.error('Error loading tokens');
     }
   };
 
@@ -59,7 +60,8 @@ function TokensList({ currentAccount }) {
         await nftContract.mintToken(currentAccount, id, uri, { value: utils.parseEther('0.01') });
       }
     } catch (error) {
-      console.log(`err: ${error}`);
+      toast.error('Not enough funds');
+      console.log(`err: ${error.data.message}`);
     }
   };
 

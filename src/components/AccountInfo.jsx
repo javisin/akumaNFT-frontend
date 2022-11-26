@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../scss/navbar.scss';
 import { ethers, utils } from 'ethers';
+import { toast } from 'react-toastify';
 import contract from '../contracts/AkumaNFT.json';
 import { contractAddress, ownerAddress } from '../constants';
 
@@ -30,7 +31,7 @@ function AccountInfo({ currentAccount }) {
         await nftContract.withdraw();
       }
     } catch (err) {
-      console.log(`err: ${err}`);
+      toast.error('Error withdrawing the funds');
     }
   };
 

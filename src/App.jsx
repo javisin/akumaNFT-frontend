@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './scss/App.scss';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Navbar from './components/Navbar';
 import TokensList from './components/TokensList';
 import AccountInfo from './components/AccountInfo';
@@ -17,7 +19,7 @@ function App() {
     const checkWalletIsConnected = async () => {
       const { ethereum } = window;
       if (!ethereum) {
-        console.log('Install metamask');
+        toast.info('Install metamask');
       }
     };
     checkWalletIsConnected();
@@ -27,32 +29,18 @@ function App() {
     const { ethereum } = window;
     try {
       const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-      console.log(`account: ${accounts[0]}`);
       setCurrentAccount(accounts[0]);
     } catch (err) {
-      console.log(err);
+      toast.error('Error connecting the wallet');
     }
   };
 
   return (
     <>
-      <Navbar />
+      <Navbar handleConnectWallet={connectWalletHandler} currentAccount={currentAccount} />
+      <ToastContainer />
       <div className="main-app">
         <AccountInfo currentAccount={currentAccount} />
-        <div>
-          {currentAccount
-            ? (
-              <span className="text-truncate d-inline-block w-100">
-                Address:
-                {currentAccount}
-              </span>
-            )
-            : (
-              <button type="button" onClick={connectWalletHandler} className="btn btn-dark p-2 ">
-                Connect Wallet
-              </button>
-            )}
-        </div>
         {currentAccount
           && (
             <TokensList
